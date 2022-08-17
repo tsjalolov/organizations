@@ -1,10 +1,15 @@
+from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils import timezone
 
 
 class RegionModel(models.Model):
     """Viloyat"""
     name = models.CharField("Viloyat", max_length=60)
+    # creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -44,7 +49,7 @@ class MahallaModel(models.Model):
 
 
 class TypeOfOrganizationModel(models.Model):
-    """tashkilot turi  maktab boxcha tibbiyot"""
+    """tashkilot turi  maktab boxcha tibbiyot sport"""
     name = models.CharField("turi", max_length=60)
 
     def __str__(self):
@@ -68,13 +73,15 @@ class OrganizationNetworkModel(models.Model):
         verbose_name_plural = "Tashkilot tarmog'lari"
 
 
-class OrganizationsModel(models.Model):
+class OrganizationModel(models.Model):
     """Tashkilot"""
     name = models.CharField("Tashkilot", max_length=60)
     districts = models.ForeignKey(DistrictModel, verbose_name="Tuman", on_delete=models.PROTECT)
     mahalla = models.ForeignKey(MahallaModel, verbose_name="Mahalla", on_delete=models.PROTECT)
-    TypeOfOrganization = models.ForeignKey(TypeOfOrganizationModel, verbose_name="turi", on_delete=models.PROTECT)
-    OrganizationNetworkModel = models.ForeignKey(OrganizationNetworkModel, verbose_name="tarmog'i", on_delete=models.PROTECT)
+    address = models.TextField("address", blank=True)
+    typeOfOrganization = models.ForeignKey(TypeOfOrganizationModel, verbose_name="turi", on_delete=models.PROTECT)
+    organizationNetworkModel = models.ForeignKey(OrganizationNetworkModel, verbose_name="tarmog'i", on_delete=models.PROTECT)
+
 
     def __str__(self):
         return self.name
@@ -82,3 +89,31 @@ class OrganizationsModel(models.Model):
     class Meta:
         verbose_name = "Tashkilot"
         verbose_name_plural = "Tashkilotlar"
+
+class MaktabModel(models.Model):
+    """Maktab xususiy ma'lumotlari """
+
+    organization = models.ForeignKey(OrganizationModel, verbose_name="tashkilot", on_delete=models.PROTECT)
+    quvvati = models.SmallIntegerField()
+
+
+    # def __str__(self):
+    #     return self.name
+
+    class Meta:
+        verbose_name = "Maktab"
+        verbose_name_plural = "Maktablar"
+
+class TomModel(models.Model):
+    organization = models.ForeignKey(OrganizationModel, verbose_name="tashkilot", on_delete=models.PROTECT)
+    mavjudJami = models.FloatField(verbose_name=('Mavjud yuzasi'))
+    tamirtalabi = models.FloatField(verbose_name=('Tamirtalab yuzasi'), default=None, editable=False, null=True)
+    status = models.SmallIntegerField('status', choices=[(1,'Soz'),(2,'Qisman tamirtalab'),(3,'To`liq tamirtalab')])
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
+
+class TomMalumotModel(models.Model):
+    tom_id = models.ForeignKey(TomModel, verbose_name="Tom", on_delete=models.PROTECT)
+    holat = models.IntegerField( verbose_name='Holati', choices=[(1,'Tamirlandi'),(2,'Tamirlab holatga tushdi')])
+    yuza = models.FloatField(verbose_name=('yuzasi'))
+    # created_at = models.DateTimeField(auto_now_add=True)
