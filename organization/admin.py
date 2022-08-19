@@ -5,6 +5,7 @@ from organization.models import *
 admin.site.register(RegionModel)
 admin.site.register(DistrictModel)
 admin.site.register(MahallaModel)
+admin.site.register(MaktabModel)
 admin.site.register(OrganizationNetworkModel)
 admin.site.register(OrganizationModel)
 admin.site.register(TypeOfOrganizationModel)
