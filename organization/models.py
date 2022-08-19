@@ -38,7 +38,7 @@ class MahallaModel(models.Model):
     name = models.CharField("Mahalla", max_length=60)
     sector = models.SmallIntegerField('Sector', validators=[MaxValueValidator(4), MinValueValidator(1)],)
     district = models.ForeignKey(DistrictModel, verbose_name="Tuman", on_delete=models.PROTECT)
-
+'''---'''
 
     def __str__(self):
         return self.name
